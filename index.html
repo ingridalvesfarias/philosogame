@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Filosofia - PhilosoGame</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK (Compat Version para Vanilla JS) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Tela de Login -->
+        <section id="login-screen" class="screen active">
+            <div class="login-container glass-panel">
+                <h1 class="neon-text">PhilosoGame</h1>
+                <p class="subtitle">A sabedoria começa na dúvida.</p>
+                
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="room-code">Código da Sala</label>
+                        <input type="text" id="room-code" placeholder="Ex: FILO101" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="team-name">Nome da Equipe</label>
+                        <input type="text" id="team-name" placeholder="Sua equipe" required>
+                    </div>
+                    
+                    <div class="avatar-selection">
+                        <p>Escolha seu Avatar:</p>
+                        <div class="avatars">
+                            <label class="avatar-option">
+                                <input type="radio" name="avatar" value="assets/1.jpg" checked>
+                                <img src="assets/1.jpg" alt="1" class="avatar-icon-img">
+                            </label>
+                            <label class="avatar-option">
+                                <input type="radio" name="avatar" value="assets/2.jpg">
+                                <img src="assets/2.jpg" alt="2" class="avatar-icon-img">
+                            </label>
+                            <label class="avatar-option">
+                                <input type="radio" name="avatar" value="assets/3.jpg">
+                                <img src="assets/3.jpg" alt="3" class="avatar-icon-img">
+                            </label>
+                            <label class="avatar-option">
+                                <input type="radio" name="avatar" value="assets/4.jpg">
+                                <img src="assets/4.jpg" alt="4" class="avatar-icon-img">
+                            </label>
+                            <label class="avatar-option">
+                                <input type="radio" name="avatar" value="assets/5.jpg">
+                                <img src="assets/5.jpg" alt="5" class="avatar-icon-img">
+                            </label>
+                            <label class="avatar-option">
+                                <input type="radio" name="avatar" value="assets/6.jpg">
+                                <img src="assets/6.jpg" alt="6" class="avatar-icon-img">
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-neon">Entrar na Sala</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Tela de Lobby (Aguardando Jogadores) -->
+        <section id="lobby-screen" class="screen" style="display: none;">
+            <div class="glass-panel text-center">
+                <h2 style="font-family: var(--font-heading); color: var(--neon-red); font-size: 2.5rem; margin-bottom: 20px;">SALA: <span id="lobby-room-code"></span></h2>
+                <p>Aguardando outras equipes entrarem...</p>
+                <div id="lobby-players" style="display: flex; gap: 15px; justify-content: center; margin: 30px 0; flex-wrap: wrap;">
+                    <!-- Jogadores aparecerão aqui -->
+                </div>
+                <button id="btn-start-game" class="btn-neon" style="display: none;">COMEÇAR O JOGO</button>
+            </div>
+        </section>
+
+        <!-- Tela do Quiz -->
+        <section id="quiz-screen" class="screen">
+            <header class="quiz-header">
+                <div class="team-info">
+                    <span id="display-avatar"></span>
+                    <span id="display-team-name"></span>
+                </div>
+                <div class="timer">
+                    <svg class="timer-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px; margin-right: 5px;">
+                      <circle cx="12" cy="13" r="8"></circle>
+                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                      <line x1="5.64" y1="5.64" x2="4.22" y2="4.22"></line>
+                      <polyline points="12 9 12 13 14 15"></polyline>
+                      <line x1="16" y1="21" x2="18" y2="23"></line>
+                      <line x1="8" y1="21" x2="6" y2="23"></line>
+                    </svg>
+                    <span id="time-left">05:00</span>
+                </div>
+            </header>
+            
+            <div class="quiz-container glass-panel">
+                <div class="progress-bar">
+                    <div id="progress" style="width: 0%;"></div>
+                </div>
+                <h2 id="question-number">Questão 1/10</h2>
+                <p id="question-text">Carregando pergunta...</p>
+                
+                <div id="options-container" class="options-container">
+                    <!-- Opções geradas via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Tela de Resultados/Feedback -->
+        <section id="feedback-screen" class="screen">
+            <div class="feedback-container glass-panel">
+                <h1 class="neon-text">Análise Filosófica</h1>
+                <div id="score-summary" class="score-summary">
+                    <p>Sua equipe acertou <span id="correct-count" class="highlight"></span> de 10 questões.</p>
+                </div>
+                
+                <div id="feedback-list" class="feedback-list">
+                    <!-- Feedbacks gerados via JS -->
+                </div>
+                
+                <button id="btn-to-podium" class="btn-neon">Ver Pódio</button>
+            </div>
+        </section>
+
+        <!-- Tela do Pódio -->
+        <section id="podium-screen" class="screen">
+            <div class="podium-container glass-panel">
+                <h1 class="neon-text">Pódio Final</h1>
+                
+                <div class="podium">
+                    <div class="place second-place">
+                        <div class="avatar" id="podium-2-avatar"></div>
+                        <div class="team" id="podium-2-name">Equipe B</div>
+                        <div class="bar">2º</div>
+                    </div>
+                    <div class="place first-place">
+                        <div class="avatar" id="podium-1-avatar"></div>
+                        <div class="team" id="podium-1-name">Sua Equipe</div>
+                        <div class="bar">1º</div>
+                    </div>
+                    <div class="place third-place">
+                        <div class="avatar" id="podium-3-avatar"></div>
+                        <div class="team" id="podium-3-name">Equipe C</div>
+                        <div class="bar">3º</div>
+                    </div>
+                </div>
+                
+                <button id="btn-restart" class="btn-neon">Jogar Novamente</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

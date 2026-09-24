@@ -1,0 +1,9 @@
+# Ignorar arquivos de configuração com chaves
+config.js
+
+# Pastas de dependências
+node_modules/
+
+# Logs e arquivos de sistema
+*.log
+.DS_Store
