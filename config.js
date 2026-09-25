@@ -1,5 +1,4 @@
 // Configurações do Firebase
-// Este arquivo está no .gitignore para não ser enviado para repositórios públicos
 const firebaseConfig = {
   apiKey: "AIzaSyBf3bkS7XQsqk2POs01hBwuEqvvT_zhCmk",
   authDomain: "philosogame-7a658.firebaseapp.com",
