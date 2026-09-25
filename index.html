@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz de Filosofia - PhilosoGame</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <!-- Firebase SDK (Compat Version para Vanilla JS) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
+
 <body>
     <div id="app">
         <!-- Tela de Login -->
@@ -18,18 +21,18 @@
             <div class="login-container glass-panel">
                 <h1 class="neon-text">PhilosoGame</h1>
                 <p class="subtitle">A sabedoria começa na dúvida.</p>
-                
+
                 <form id="login-form">
                     <div class="input-group">
                         <label for="room-code">Código da Sala</label>
                         <input type="text" id="room-code" placeholder="Ex: FILO101" required>
                     </div>
-                    
+
                     <div class="input-group">
-                        <label for="team-name">Nome da Equipe</label>
-                        <input type="text" id="team-name" placeholder="Sua equipe" required>
+                        <label for="team-name">Seu Nome ou Nome da Equipe</label>
+                        <input type="text" id="team-name" placeholder="Ex: Sofistas Anônimos" required>
                     </div>
-                    
+
                     <div class="avatar-selection">
                         <p>Escolha seu Avatar:</p>
                         <div class="avatars">
@@ -59,18 +62,28 @@
                             </label>
                         </div>
                     </div>
-                    
-                    <button type="submit" class="btn-neon">Entrar na Sala</button>
+
+                    <div class="mode-buttons">
+                        <button type="button" id="btn-join-team" class="btn-neon btn-mode">👥 Jogar em Equipe</button>
+                        <button type="button" id="btn-join-solo" class="btn-neon btn-mode">🎮 Jogar Individual</button>
+                    </div>
+                    <p class="mode-hint">Equipe: várias pessoas na mesma sala com o <strong>mesmo nome</strong> somam
+                        pontos como um só time. Individual: cada um entra com seu próprio nome e compete sozinho no
+                        pódio da sala.</p>
                 </form>
             </div>
         </section>
 
         <!-- Tela de Lobby (Aguardando Jogadores) -->
-        <section id="lobby-screen" class="screen" style="display: none;">
+        <section id="lobby-screen" class="screen">
             <div class="glass-panel text-center">
-                <h2 style="font-family: var(--font-heading); color: var(--neon-red); font-size: 2.5rem; margin-bottom: 20px;">SALA: <span id="lobby-room-code"></span></h2>
-                <p>Aguardando outras equipes entrarem...</p>
-                <div id="lobby-players" style="display: flex; gap: 15px; justify-content: center; margin: 30px 0; flex-wrap: wrap;">
+                <h2
+                    style="font-family: var(--font-heading); color: var(--neon-red); font-size: 2.5rem; margin-bottom: 10px;">
+                    SALA: <span id="lobby-room-code"></span></h2>
+                <p id="lobby-mode-info" class="subtitle"></p>
+                <p>Jogadores na sala: <strong id="lobby-player-count">0</strong></p>
+                <div id="lobby-players"
+                    style="display: flex; gap: 15px; justify-content: center; margin: 30px 0; flex-wrap: wrap;">
                     <!-- Jogadores aparecerão aqui -->
                 </div>
                 <button id="btn-start-game" class="btn-neon" style="display: none;">COMEÇAR O JOGO</button>
@@ -85,25 +98,27 @@
                     <span id="display-team-name"></span>
                 </div>
                 <div class="timer">
-                    <svg class="timer-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px; margin-right: 5px;">
-                      <circle cx="12" cy="13" r="8"></circle>
-                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                      <line x1="5.64" y1="5.64" x2="4.22" y2="4.22"></line>
-                      <polyline points="12 9 12 13 14 15"></polyline>
-                      <line x1="16" y1="21" x2="18" y2="23"></line>
-                      <line x1="8" y1="21" x2="6" y2="23"></line>
+                    <svg class="timer-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="#ff0000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        style="width: 28px; height: 28px; margin-right: 5px;">
+                        <circle cx="12" cy="13" r="8"></circle>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        <line x1="5.64" y1="5.64" x2="4.22" y2="4.22"></line>
+                        <polyline points="12 9 12 13 14 15"></polyline>
+                        <line x1="16" y1="21" x2="18" y2="23"></line>
+                        <line x1="8" y1="21" x2="6" y2="23"></line>
                     </svg>
                     <span id="time-left">05:00</span>
                 </div>
             </header>
-            
+
             <div class="quiz-container glass-panel">
                 <div class="progress-bar">
                     <div id="progress" style="width: 0%;"></div>
                 </div>
                 <h2 id="question-number">Questão 1/10</h2>
                 <p id="question-text">Carregando pergunta...</p>
-                
+
                 <div id="options-container" class="options-container">
                     <!-- Opções geradas via JS -->
                 </div>
@@ -115,13 +130,14 @@
             <div class="feedback-container glass-panel">
                 <h1 class="neon-text">Análise Filosófica</h1>
                 <div id="score-summary" class="score-summary">
-                    <p>Sua equipe acertou <span id="correct-count" class="highlight"></span> de 10 questões.</p>
+                    <p>Sua equipe acertou <span id="correct-count" class="highlight"></span> de <span
+                            id="total-questions"></span> questões.</p>
                 </div>
-                
+
                 <div id="feedback-list" class="feedback-list">
                     <!-- Feedbacks gerados via JS -->
                 </div>
-                
+
                 <button id="btn-to-podium" class="btn-neon">Ver Pódio</button>
             </div>
         </section>
@@ -130,7 +146,7 @@
         <section id="podium-screen" class="screen">
             <div class="podium-container glass-panel">
                 <h1 class="neon-text">Pódio Final</h1>
-                
+
                 <div class="podium">
                     <div class="place second-place">
                         <div class="avatar" id="podium-2-avatar"></div>
@@ -148,7 +164,7 @@
                         <div class="bar">3º</div>
                     </div>
                 </div>
-                
+
                 <button id="btn-restart" class="btn-neon">Jogar Novamente</button>
             </div>
         </section>
@@ -157,4 +173,5 @@
     <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
