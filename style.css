@@ -470,7 +470,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100px;
+    width: 120px;
     text-align: center;
 }
 
@@ -488,12 +488,13 @@ body {
 .place .team {
     font-weight: bold;
     margin-bottom: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
     width: 100%;
     font-family: var(--font-heading);
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-size: 0.95rem;
+    line-height: 1.2;
 }
 
 .place .bar {
@@ -600,7 +601,7 @@ body {
     }
 
     .place {
-        width: 80px;
+        width: 100px;
     }
 
     .place .avatar img {
