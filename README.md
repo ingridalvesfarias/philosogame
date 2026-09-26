@@ -1,7 +1,5 @@
 # 🧠 PhilosoGame — Quiz Multiplayer de Filosofia
 
-![PhilosoGame](assets/title.png)
-
 > *"A sabedoria começa na dúvida."* — Sócrates
 
 **PhilosoGame** é uma aplicação web interativa e multiplayer no estilo *Quiz Game*, desenvolvida para dinamizar o ensino e aprendizado de Filosofia. Com estética gamer dark/neon, suporte a sincronização em tempo real via Firebase e proteção anticola com embaralhamento individual de questões, a plataforma permite realizar avaliações e dinâmicas de forma engajadora.
